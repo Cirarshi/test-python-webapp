@@ -2,37 +2,32 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'main', url: 'https://github.com/YOUR_USERNAME/my-python-webapp.git'
-            }
-        }
-
-        stage('Setup Python') {
+        stage('Build') {
             steps {
                 sh '''
-                  python3 -m venv venv
-                  . venv/bin/activate
-                  pip install --upgrade pip
-                  pip install -r requirements.txt
+                    echo "Installing dependencies..."
+                    python3 -m pip install --upgrade pip
+                    pip3 install -r requirements.txt
                 '''
             }
         }
 
-        stage('Run Tests') {
+        stage('Test') {
             steps {
                 sh '''
-                  . venv/bin/activate
-                  python -m unittest discover -s tests || echo "No tests yet!"
+                    echo "Running tests..."
+                    pytest || echo "No tests found"
                 '''
             }
         }
 
-        stage('Run App') {
+        stage('Deploy') {
             steps {
                 sh '''
-                  . venv/bin/activate
-                  nohup python app.py > flask.log 2>&1 &
+                    echo "Deploying application..."
+                    nohup python3 app.py > flask.log 2>&1 &
+                    sleep 5
+                    curl http://127.0.0.1:5000
                 '''
             }
         }
