@@ -74,7 +74,7 @@ For production, use a WSGI server like Gunicorn or uWSGI, possibly inside Docker
 
 ---
 
-🤝 Contributing
+## 🤝 Contributing
 Feel free to fork this repo and submit pull requests.
 Suggestions and improvements are always welcome!
 
