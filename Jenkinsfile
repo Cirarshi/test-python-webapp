@@ -3,11 +3,13 @@ pipeline {
 
     stages {
         stage('Build') {
-            steps {
+           steps {
                 sh '''
-                    echo "Installing dependencies..."
-                    python3 -m pip install --upgrade pip
-                    pip3 install -r requirements.txt
+                    echo "Setting up virtual environment..."
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    pip install --upgrade pip
+                    pip install -r requirements.txt
                 '''
             }
         }
