@@ -1,0 +1,12 @@
+Setting venv and libarires in EC2
+
+Install venv pacakge
+    - apt install -y python3-venv
+Create a venv
+    - python3 -m venv <virtual-enviornment-name>
+    Ex: python3 -m venv mytestvenv
+Activate it
+    - source <virtual-enviornment-name>/bin/activate
+    Ex: source mytestvenv/bin/activate
+Install flask
+    - pip install flask
