@@ -40,21 +40,20 @@ pipeline {
                 '''
             }
         }
+    }
 
-        post {
-            success {
-                emailext(
-                    subject: "Jenkins Build SUCCESS",
-                    body: "Good news! The build succeeded.",
-                    
-                )
-            }
-            failure {
-                emailext(
-                    subject: "Jenkins Build FAILURE",
-                    body: "Oops! The build failed.",
-                )
-            }
+    post {
+        success {
+            emailext(
+                subject: "Jenkins Build SUCCESS",
+                body: "Good news! The build succeeded.",
+            )
+        }
+        failure {
+            emailext(
+                subject: "Jenkins Build FAILURE",
+                body: "Oops! The build failed.",
+            )
         }
     }
 }
