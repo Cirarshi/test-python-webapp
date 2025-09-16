@@ -45,34 +45,25 @@ deploy-staging:
   needs: build-test
 
   steps:
-      - uses: actions/checkout@v4
+      if: github.ref == 'refs/heads/staging'
+      runs-on: ubuntu-latest
+      needs: build-test
 
-      - name: Deploy to Staging Server
-        run: |
-          echo "Deploying to staging..."
-          ssh -o StrictHostKeyChecking=no ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }} << 'EOF'
-          cd /path/to/app
-          git pull origin staging
-          source venv/bin/activate
-          pip install -r requirements.txt
-          systemctl restart flask-app
-          EOF
-
+      steps:
+        - name: Simulate staging deploy
+          run: |
+            echo "✅ Staging deploy triggered"
+            echo "Here you would SSH into staging or push Docker image"
+            EOF
+            
   deploy-production:
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     needs: build-test
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Deploy to Production Server
+      - name: Simulate production deploy
         run: |
-          echo "Deploying to production..."
-          ssh -o StrictHostKeyChecking=no ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} << 'EOF'
-          cd /path/to/app
-          git pull origin main
-          source venv/bin/activate
-          pip install -r requirements.txt
-          systemctl restart flask-app
+          echo "🚀 Production deploy triggered"
+          echo "Here you would pull latest code on server or run docker-compose up"
           EOF
