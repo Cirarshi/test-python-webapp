@@ -19,51 +19,50 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.10"
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install flake8 pytest
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      run: |
-        pytest
+      - uses: actions/checkout@v4
 
-deploy-staging:
-  if: githuib.ref == 'refs/heads/staging'
-  runs-on: ubuntu-latest
-  needs: build-test
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
 
-  steps:
-      if: github.ref == 'refs/heads/staging'
-      runs-on: ubuntu-latest
-      needs: build-test
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 pytest
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      steps:
-        - name: Simulate staging deploy
-          run: |
-            echo "✅ Staging deploy triggered"
-            echo "Here you would SSH into staging or push Docker image"
-            EOF
-            
+      - name: Lint with flake8
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Test with pytest
+        run: |
+          pytest
+
+  deploy-staging:
+    if: github.ref == 'refs/heads/staging'
+    runs-on: ubuntu-latest
+    needs: build-test
+
+    steps:
+      - name: Deploy to Staging
+        run: |
+          echo "${{ secrets.STAGING_KEY }}" > key.pem
+          chmod 600 key.pem
+          ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }} "cd /var/www && git pull"
+
   deploy-production:
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     needs: build-test
 
     steps:
-      - name: Simulate production deploy
+      - name: Deploy to Production
         run: |
-          echo "🚀 Production deploy triggered"
-          echo "Here you would pull latest code on server or run docker-compose up"
-          EOF
+          echo "${{ secrets.PROD_KEY }}" > key.pem
+          chmod 600 key.pem
+          ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} "cd /var/www && git pull"
